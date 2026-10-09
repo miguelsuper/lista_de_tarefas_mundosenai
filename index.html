@@ -1,53 +1,140 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Minha Lista de Tarefas</title>
-
+    <title>Minhas Tarefas</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
-
 <body>
 
-    <header>
-        <h1>LISTA DE TAREFAS</h1>
-        <p>Organize suas tarefas e coloque seus planos em prática!</p>
-    </header>
+    <aside class="sidebar">
+        <h1>Minhas Tarefas</h1>
 
-    <main>
-
-        <section id="adicionar-tarefa">
-            <h2>Nova tarefa</h2>
-
-            <input
-                type="text"
-                id="input-tarefa"
-                placeholder="Digite uma tarefa..."
-                maxlength="120"
-            >
-
-            <button type="button" id="btn-adicionar">
-                + Adicionar
+        <nav class="atalhos">
+            <button class="nav-item selecionado" data-lista="todas">
+                <span>☷</span> Todas
+                <span class="quantidade" id="count-todas">0</span>
             </button>
-        </section>
 
-        <section id="minhas-tarefas">
-            <h2>Minhas tarefas</h2>
+            <button class="nav-item" data-lista="hoje">
+                <span>□</span> Hoje
+                <span class="quantidade" id="count-hoje">0</span>
+            </button>
 
-            <ul id="lista-tarefas"></ul>
-        </section>
+            <button class="nav-item" data-lista="importantes">
+                <span>☆</span> Importantes
+                <span class="quantidade" id="count-importantes">0</span>
+            </button>
+        </nav>
 
+        <div class="separador"></div>
+
+        <div class="titulo-pastas">
+            <h2>Pastas</h2>
+            <button id="adicionar-pasta" class="botao-mais">+</button>
+        </div>
+
+        <nav id="lista-pastas" class="lista-pastas"></nav>
+
+        <p class="nota-local">● Salvo neste dispositivo</p>
+        
+<a href="termos.html" class="link-termos">
+    Termos de autorização
+</a>
+    </aside>
+    
+
+    <main class="conteudo">
+        <header class="topo">
+            <div>
+                <p class="subtitulo">MINHAS LISTAS</p>
+                <h2 id="titulo-lista">Todas</h2>
+                <p id="resumo-lista" class="resumo">
+                    Suas tarefas em um só lugar
+                </p>
+            </div>
+
+          
+        </header>
+
+        <form id="form-rapido" class="adicionar-tarefa">
+            <input
+                id="nova-tarefa"
+                type="text"
+                maxlength="120"
+                placeholder="Adicionar uma tarefa..."
+                autocomplete="off"
+            >
+            <button type="submit">+</button>
+        </form>
+
+        <section id="tarefas" class="tarefas"></section>
+
+        <p id="mensagem-vazia" class="vazio">
+            Sua lista está vazia. Adicione uma tarefa para começar.
+        </p>
     </main>
 
-    <footer>
-        <p>Meu organizador de tarefas © 2026</p>
-    </footer>
+    <dialog id="modal-pasta" class="modal">
+        <form id="form-pasta">
+            <h2>Nova pasta</h2>
+
+            <label for="nome-pasta">Nome da pasta</label>
+            <input
+                id="nome-pasta"
+                type="text"
+                maxlength="40"
+                placeholder="Ex.: Faculdade"
+                required
+            >
+
+            <label for="cor-pasta">Cor</label>
+            <select id="cor-pasta">
+                <option value="grafite">Grafite</option>
+                <option value="cinza">Cinza</option>
+                <option value="prata">Prata</option>
+                <option value="preto">Preto</option>
+            </select>
+
+            <div class="acoes-modal">
+                <button type="button" class="botao-secundario" data-fechar>
+                    Cancelar
+                </button>
+                <button type="submit" class="botao-principal">
+                    Criar pasta
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="modal-editar" class="modal">
+        <form id="form-editar">
+            <h2>Editar tarefa</h2>
+
+            <label for="editar-titulo">Tarefa</label>
+            <input id="editar-titulo" type="text" maxlength="120" required>
+
+            <label for="editar-pasta">Pasta</label>
+            <select id="editar-pasta" required></select>
+
+            <div class="acoes-modal">
+                <button type="button" class="botao-secundario" data-fechar>
+                    Cancelar
+                </button>
+                <button type="submit" class="botao-principal">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    
+<footer class="rodape">
+    SESI - Ampére
+</footer>
 
 </body>
-
 </html>
