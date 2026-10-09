@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Minha Lista de Tarefas</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>LISTA DE TAREFAS</h1>
+        <h1>organize.</h1>
     </header>
     <main>
-        <input type="text" id="input-tarefa" placeholder="Digite uma tarefa...">
-        <button id="btn-adicionar">Adicionar</button>
+        <div class="painel-blocos">
+            <button id="btn-criar-bloco">Criar Novo Bloco</button>
+        </div>
 
-        <ul id="lista-tarefas"></ul>
+        <!-- Container onde os blocos ficarão lado a lado -->
+        <div id="container-blocos"></div>
 
         <script src="script.js"></script>
     </main>
     <footer>
-        <h3>Footer</h3>
+        <h3>SESI - Ampére</h3>
     </footer>
 </body>
 </html>

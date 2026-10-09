@@ -1,0 +1,97 @@
+/* Configuração para o rodapé ficar sempre lá embaixo */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column; /* Organiza os elementos em coluna (Header, Main, Footer) */
+}
+
+header {
+    color: black;
+    text-align: center;
+    padding: 10px;
+    background-color: #e0e0e0;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+/* O <main> cresce e empurra o footer para o fundo da tela */
+main {
+    flex: 1; 
+    padding: 20px;
+    display: flex;
+}
+
+main *:not(container-blocos) {
+    display: flex;
+    justify-content: center;
+}
+
+footer {
+    text-align: left;
+    background-color: #e0e0e0;
+    padding: 10px;
+    font-weight: bolder;
+    font-size: 15px;
+}
+
+/* Container que segura os blocos e deixa eles um do lado do outro */
+#container-blocos {
+    display: flex;
+    flex-wrap: wrap; /* Faz quebrar de linha se a tela encher */
+    gap: 20px;       /* Espaço entre os blocos */
+    margin-top: 20px;
+}
+
+/* O estilo de cada bloco individual */
+.bloco-tarefa {
+    background-color: #ffffff;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    width: 250px;    
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.bloco-tarefa h2 {
+    font-size: 1.2rem;
+    margin-top: 0;
+}
+
+.bloco-tarefa input[type="text"] {
+    width: 75%;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.bloco-tarefa ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.bloco-tarefa li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    background: #f9f9f9;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Botões */
+button {
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+#btn-criar-bloco {
+    padding: 10px 15px;
+    font-size: 1rem;
+}
