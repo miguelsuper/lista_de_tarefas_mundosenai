@@ -1,23 +1,53 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Minha Lista de Tarefas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Minha Lista de Tarefas</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
+
 <body>
+
     <header>
         <h1>LISTA DE TAREFAS</h1>
+        <p>Organize suas tarefas e coloque seus planos em prática!</p>
     </header>
+
     <main>
-        <input type="text" id="input-tarefa" placeholder="Digite uma tarefa...">
-        <button id="btn-adicionar">Adicionar</button>
 
-        <ul id="lista-tarefas"></ul>
+        <section id="adicionar-tarefa">
+            <h2>Nova tarefa</h2>
 
-        <script src="script.js"></script>
+            <input
+                type="text"
+                id="input-tarefa"
+                placeholder="Digite uma tarefa..."
+                maxlength="120"
+            >
+
+            <button type="button" id="btn-adicionar">
+                + Adicionar
+            </button>
+        </section>
+
+        <section id="minhas-tarefas">
+            <h2>Minhas tarefas</h2>
+
+            <ul id="lista-tarefas"></ul>
+        </section>
+
     </main>
+
     <footer>
-        <h3>Footer</h3>
+        <p>Meu organizador de tarefas © 2026</p>
     </footer>
+
 </body>
+
 </html>

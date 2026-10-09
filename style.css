@@ -1,0 +1,49 @@
+
+#lista-tarefas {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.tarefa {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    border-radius: 10px;
+}
+
+.tarefa span {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.tarefa input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #8b5cf6;
+}
+
+.tarefa .concluida {
+    text-decoration: line-through;
+    opacity: 0.55;
+}
+
+.btn-excluir {
+    background: transparent;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+.btn-excluir:hover {
+    transform: scale(1.1);
+}
