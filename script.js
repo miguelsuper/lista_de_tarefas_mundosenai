@@ -1,4 +1,3 @@
-
 const CHAVE = "minhas-tarefas-notas-v1";
 
 const $ = (seletor) => document.querySelector(seletor);
@@ -19,28 +18,29 @@ function dadosIniciais() {
     };
 }
 
+// Carrega os dados salvos sem apagar as tarefas existentes.
 function carregar() {
     try {
         const salvo = localStorage.getItem(CHAVE);
 
         if (salvo) {
-            const dados = JSON.parse(salvo);
+            const dadosSalvos = JSON.parse(salvo);
 
             if (
-                Array.isArray(dados.pastas) &&
-                Array.isArray(dados.tarefas)
+                Array.isArray(dadosSalvos.pastas) &&
+                Array.isArray(dadosSalvos.tarefas)
             ) {
-                dados.pastas = dados.pastas.filter(
+                dadosSalvos.pastas = dadosSalvos.pastas.filter(
                     p => p && p.id && p.nome
                 );
 
-                dados.tarefas = dados.tarefas.filter(
+                dadosSalvos.tarefas = dadosSalvos.tarefas.filter(
                     t => t && t.id &&
                     typeof t.texto === "string" &&
                     typeof t.concluida === "boolean"
                 );
 
-                return dados;
+                return dadosSalvos;
             }
         }
     } catch (erro) {
@@ -55,6 +55,7 @@ let listaAtual = "todas";
 let pastaAtual = null;
 let tarefaEditando = null;
 
+// Salva os dados no navegador.
 function salvar() {
     try {
         localStorage.setItem(CHAVE, JSON.stringify(dados));
@@ -69,6 +70,44 @@ function pastaPorId(id) {
     return dados.pastas.find(p => p.id === id);
 }
 
+// Calcula o status do prazo usando a data local do computador.
+function calcularPrazo(data) {
+    if (!data) return null;
+
+    const [ano, mes, dia] = data.split("-").map(Number);
+
+    const prazo = Date.UTC(ano, mes - 1, dia);
+
+    const agora = new Date();
+
+    const hoje = Date.UTC(
+        agora.getFullYear(),
+        agora.getMonth(),
+        agora.getDate()
+    );
+
+    const dias = Math.round((prazo - hoje) / 86400000);
+
+    if (dias < 0) {
+        return { texto: "Vencido", classe: "vencido" };
+    }
+
+    if (dias === 0) {
+        return { texto: "Vence hoje", classe: "hoje" };
+    }
+
+    if (dias === 1) {
+        return { texto: "Último dia", classe: "ultimo-dia" };
+    }
+
+    if (dias <= 7) {
+        return { texto: "Perto", classe: "perto" };
+    }
+
+    return { texto: "Longe", classe: "longe" };
+}
+
+// Retorna as tarefas que devem aparecer na lista atual.
 function tarefasVisiveis() {
     if (listaAtual === "todas") {
         return dados.tarefas;
@@ -85,6 +124,7 @@ function tarefasVisiveis() {
     return dados.tarefas.filter(t => t.pastaId === pastaAtual);
 }
 
+// Atualiza o título e o subtítulo da lista.
 function atualizarTitulo() {
     const titulos = {
         todas: ["Todas", "Suas tarefas em um só lugar"],
@@ -97,10 +137,14 @@ function atualizarTitulo() {
 
     if (pastaAtual) {
         const pasta = pastaPorId(pastaAtual);
+
         titulo = pasta ? pasta.nome : "Minhas Tarefas";
 
         const quantidade = tarefasVisiveis().length;
-        resumo = `${quantidade} ${quantidade === 1 ? "tarefa" : "tarefas"}`;
+
+        resumo = `${quantidade} ${
+            quantidade === 1 ? "tarefa" : "tarefas"
+        }`;
     } else {
         [titulo, resumo] = titulos[listaAtual] || titulos.todas;
     }
@@ -109,6 +153,7 @@ function atualizarTitulo() {
     $("#resumo-lista").textContent = resumo;
 }
 
+// Atualiza o menu lateral e as pastas.
 function renderizarMenu() {
     $("#count-todas").textContent = dados.tarefas.length;
 
@@ -129,86 +174,45 @@ function renderizarMenu() {
     nav.replaceChildren();
 
     dados.pastas.forEach(pasta => {
-       
-const item = document.createElement("div");
-item.className = "pasta-linha";
+        const botao = document.createElement("button");
 
-const botao = document.createElement("button");
-botao.type = "button";
-botao.className = "pasta-item";
+        botao.type = "button";
+        botao.className = "pasta-item";
 
-if (pastaAtual === pasta.id) {
-    botao.classList.add("selecionado");
-}
+        if (pastaAtual === pasta.id) {
+            botao.classList.add("selecionado");
+        }
 
-const icone = document.createElement("span");
-icone.className = `icone-pasta ${pasta.cor || "grafite"}`;
+        const icone = document.createElement("span");
+        icone.className = `icone-pasta ${pasta.cor || "grafite"}`;
 
-const nome = document.createElement("span");
-nome.className = "pasta-nome";
-nome.textContent = pasta.nome;
+        const nome = document.createElement("span");
+        nome.className = "pasta-nome";
+        nome.textContent = pasta.nome;
 
-const contagem = document.createElement("span");
-contagem.className = "pasta-contagem";
-contagem.textContent = dados.tarefas.filter(
-    t => t.pastaId === pasta.id
-).length;
+        const contagem = document.createElement("span");
+        contagem.className = "pasta-contagem";
 
-botao.append(icone, nome, contagem);
+        contagem.textContent = dados.tarefas.filter(
+            t => t.pastaId === pasta.id
+        ).length;
 
-botao.addEventListener("click", () => {
-    pastaAtual = pasta.id;
-    listaAtual = "pasta";
-    renderizar();
-});
+        botao.append(icone, nome, contagem);
 
-const lixeira = document.createElement("button");
-lixeira.type = "button";
-lixeira.className = "pasta-excluir";
-lixeira.textContent = "🗑";
-lixeira.title = `Excluir pasta ${pasta.nome}`;
-lixeira.setAttribute("aria-label", `Excluir pasta ${pasta.nome}`);
+        botao.addEventListener("click", () => {
+            pastaAtual = pasta.id;
+            listaAtual = "pasta";
+            renderizar();
+        });
 
-lixeira.addEventListener("click", (evento) => {
-    evento.stopPropagation();
-
-    const quantidade = dados.tarefas.filter(
-        t => t.pastaId === pasta.id
-    ).length;
-
-    const mensagem = quantidade > 0
-        ? `Excluir a pasta "${pasta.nome}" e suas ${quantidade} tarefa(s)?`
-        : `Excluir a pasta "${pasta.nome}"?`;
-
-    if (!confirm(mensagem)) return;
-
-    const pastasAnteriores = [...dados.pastas];
-    const tarefasAnteriores = [...dados.tarefas];
-
-    dados.pastas = dados.pastas.filter(p => p.id !== pasta.id);
-    dados.tarefas = dados.tarefas.filter(t => t.pastaId !== pasta.id);
-
-    if (!salvar()) {
-        dados.pastas = pastasAnteriores;
-        dados.tarefas = tarefasAnteriores;
-        return;
-    }
-
-    if (pastaAtual === pasta.id) {
-        pastaAtual = null;
-        listaAtual = "todas";
-    }
-
-    renderizar();
-});
-
-item.append(botao, lixeira);
-nav.appendChild(item);
+        nav.appendChild(botao);
     });
 }
 
+// Renderiza as tarefas e seus indicadores de prazo.
 function renderizarTarefas() {
     const container = $("#tarefas");
+
     container.replaceChildren();
 
     const tarefas = tarefasVisiveis();
@@ -228,55 +232,113 @@ function renderizarTarefas() {
 
     tarefas.forEach(tarefa => {
         const linha = document.createElement("div");
+
         linha.className = "tarefa";
 
         if (tarefa.concluida) {
             linha.classList.add("concluida");
         }
 
+        // Caixa para concluir a tarefa.
         const checkbox = document.createElement("input");
+
         checkbox.type = "checkbox";
         checkbox.checked = tarefa.concluida;
-        checkbox.setAttribute("aria-label", `Concluir ${tarefa.texto}`);
 
-        
+        checkbox.setAttribute(
+            "aria-label",
+            `Concluir ${tarefa.texto}`
+        );
+
         checkbox.addEventListener("change", () => {
-        tarefa.concluida = checkbox.checked;
+            const estadoAnterior = tarefa.concluida;
 
-        salvar();
+            tarefa.concluida = checkbox.checked;
 
-        linha.classList.toggle("concluida", tarefa.concluida);
+            if (!salvar()) {
+                tarefa.concluida = estadoAnterior;
+                checkbox.checked = estadoAnterior;
+                return;
+            }
 
-        renderizarMenu();
-        atualizarTitulo();
+            renderizar();
         });
 
+        // Texto da tarefa.
         const texto = document.createElement("span");
+
         texto.className = "tarefa-texto";
         texto.textContent = tarefa.texto;
 
+        linha.append(checkbox, texto);
+
+        // Indicador do prazo.
+        if (tarefa.prazo) {
+            const indicador = document.createElement("span");
+
+            indicador.className = "indicador-prazo";
+
+            if (tarefa.concluida) {
+                indicador.textContent = "Concluída";
+                indicador.classList.add("concluida-prazo");
+            } else {
+                const status = calcularPrazo(tarefa.prazo);
+
+                indicador.textContent = status.texto;
+                indicador.classList.add(status.classe);
+
+                const dataFormatada = tarefa.prazo
+                    .split("-")
+                    .reverse()
+                    .join("/");
+
+                indicador.title = `Prazo: ${dataFormatada}`;
+            }
+
+            linha.appendChild(indicador);
+        }
+
+        // Botões de ação.
         const acoes = document.createElement("div");
+
         acoes.className = "tarefa-acoes";
 
+        // Marcar como importante.
         const importante = document.createElement("button");
+
         importante.type = "button";
         importante.textContent = tarefa.importante ? "★" : "☆";
+
         importante.title = tarefa.importante
             ? "Remover dos importantes"
             : "Marcar como importante";
 
         importante.addEventListener("click", () => {
+            const anterior = tarefa.importante;
+
             tarefa.importante = !tarefa.importante;
-            salvar();
+
+            if (!salvar()) {
+                tarefa.importante = anterior;
+                return;
+            }
+
             renderizar();
         });
 
+        // Editar a tarefa.
         const editar = document.createElement("button");
+
         editar.type = "button";
         editar.textContent = "Editar";
-        editar.addEventListener("click", () => abrirEditar(tarefa.id));
 
+        editar.addEventListener("click", () => {
+            abrirEditar(tarefa.id);
+        });
+
+        // Excluir a tarefa.
         const excluir = document.createElement("button");
+
         excluir.type = "button";
         excluir.textContent = "Excluir";
 
@@ -285,39 +347,54 @@ function renderizarTarefas() {
                 return;
             }
 
+            const tarefasAnteriores = [...dados.tarefas];
+
             dados.tarefas = dados.tarefas.filter(
                 t => t.id !== tarefa.id
             );
 
-            salvar();
+            if (!salvar()) {
+                dados.tarefas = tarefasAnteriores;
+                return;
+            }
+
             renderizar();
         });
 
         acoes.append(importante, editar, excluir);
-        linha.append(checkbox, texto, acoes);
+
+        linha.appendChild(acoes);
+
         container.appendChild(linha);
     });
 }
 
+// Atualiza toda a interface.
 function renderizar() {
     renderizarMenu();
     atualizarTitulo();
     renderizarTarefas();
 }
 
+// Navegação pelas listas do menu.
 document.querySelectorAll("[data-lista]").forEach(botao => {
     botao.addEventListener("click", () => {
         listaAtual = botao.dataset.lista;
         pastaAtual = null;
+
         renderizar();
     });
 });
 
+// Adicionar uma tarefa.
 $("#form-rapido").addEventListener("submit", evento => {
     evento.preventDefault();
 
     const campo = $("#nova-tarefa");
     const texto = campo.value.trim();
+
+    const campoPrazo = $("#prazo-tarefa");
+    const prazo = campoPrazo ? campoPrazo.value : "";
 
     if (!texto) {
         campo.focus();
@@ -326,6 +403,7 @@ $("#form-rapido").addEventListener("submit", evento => {
 
     if (dados.pastas.length === 0) {
         alert("Crie uma pasta antes de adicionar uma tarefa.");
+
         $("#modal-pasta").showModal();
         return;
     }
@@ -338,7 +416,8 @@ $("#form-rapido").addEventListener("submit", evento => {
         pastaId,
         concluida: false,
         importante: false,
-        criadaEm: new Date().toISOString()
+        criadaEm: new Date().toISOString(),
+        prazo: prazo || ""
     };
 
     dados.tarefas.push(tarefa);
@@ -347,20 +426,31 @@ $("#form-rapido").addEventListener("submit", evento => {
         dados.tarefas = dados.tarefas.filter(
             t => t.id !== tarefa.id
         );
+
         return;
     }
 
     campo.value = "";
+
+    if (campoPrazo) {
+        campoPrazo.value = "";
+    }
+
     renderizar();
+
     campo.focus();
 });
 
+// Abrir o formulário para criar uma pasta.
 $("#adicionar-pasta").addEventListener("click", () => {
     $("#form-pasta").reset();
+
     $("#modal-pasta").showModal();
+
     $("#nome-pasta").focus();
 });
 
+// Criar uma pasta.
 $("#form-pasta").addEventListener("submit", evento => {
     evento.preventDefault();
 
@@ -388,6 +478,7 @@ $("#form-pasta").addEventListener("submit", evento => {
         dados.pastas = dados.pastas.filter(
             p => p.id !== pasta.id
         );
+
         return;
     }
 
@@ -399,28 +490,35 @@ $("#form-pasta").addEventListener("submit", evento => {
     renderizar();
 });
 
+// Abrir a janela de edição.
 function abrirEditar(id) {
     const tarefa = dados.tarefas.find(t => t.id === id);
 
     if (!tarefa) return;
 
     tarefaEditando = id;
+
     $("#editar-titulo").value = tarefa.texto;
 
     const select = $("#editar-pasta");
+
     select.replaceChildren();
 
     dados.pastas.forEach(pasta => {
         const option = document.createElement("option");
+
         option.value = pasta.id;
         option.textContent = pasta.nome;
+
         select.appendChild(option);
     });
 
     select.value = tarefa.pastaId;
+
     $("#modal-editar").showModal();
 }
 
+// Salvar as alterações da tarefa.
 $("#form-editar").addEventListener("submit", evento => {
     evento.preventDefault();
 
@@ -430,13 +528,20 @@ $("#form-editar").addEventListener("submit", evento => {
 
     if (!tarefa) return;
 
+    const tituloNovo = $("#editar-titulo").value.trim();
+    const pastaNova = $("#editar-pasta").value;
+
+    if (!tituloNovo) {
+        alert("Digite um título para a tarefa.");
+        $("#editar-titulo").focus();
+        return;
+    }
+
     const tituloAnterior = tarefa.texto;
     const pastaAnterior = tarefa.pastaId;
 
-    tarefa.texto = $("#editar-titulo").value.trim();
-    tarefa.pastaId = $("#editar-pasta").value;
-
-    if (!tarefa.texto) return;
+    tarefa.texto = tituloNovo;
+    tarefa.pastaId = pastaNova;
 
     if (!salvar()) {
         tarefa.texto = tituloAnterior;
@@ -445,15 +550,96 @@ $("#form-editar").addEventListener("submit", evento => {
     }
 
     $("#modal-editar").close();
+
     tarefaEditando = null;
 
     renderizar();
 });
 
+// Botões para fechar as janelas.
 document.querySelectorAll("[data-fechar]").forEach(botao => {
     botao.addEventListener("click", () => {
         botao.closest("dialog").close();
     });
 });
 
+// Menu de opções da pasta atual.
+$("#menu-pasta").addEventListener("click", () => {
+    if (!pastaAtual) {
+        alert("Abra uma pasta para ver as opções dela.");
+        return;
+    }
+
+    const pasta = pastaPorId(pastaAtual);
+
+    if (!pasta) return;
+
+    const acao = prompt(
+        `Pasta "${pasta.nome}"\n\n1 - Renomear\n2 - Excluir`
+    );
+
+    // Renomear pasta.
+    if (acao === "1") {
+        const nome = prompt(
+            "Novo nome da pasta:",
+            pasta.nome
+        );
+
+        if (!nome || !nome.trim()) return;
+
+        const novoNome = nome.trim();
+
+        if (dados.pastas.some(
+            p => p.id !== pasta.id &&
+            p.nome.toLowerCase() === novoNome.toLowerCase()
+        )) {
+            alert("Já existe uma pasta com esse nome.");
+            return;
+        }
+
+        const anterior = pasta.nome;
+
+        pasta.nome = novoNome;
+
+        if (!salvar()) {
+            pasta.nome = anterior;
+            return;
+        }
+
+        renderizar();
+    }
+
+    // Excluir pasta.
+    if (acao === "2") {
+        if (!confirm(
+            `Excluir "${pasta.nome}" e todas as tarefas dela?`
+        )) {
+            return;
+        }
+
+        const pastasAnteriores = [...dados.pastas];
+        const tarefasAnteriores = [...dados.tarefas];
+
+        dados.pastas = dados.pastas.filter(
+            p => p.id !== pasta.id
+        );
+
+        dados.tarefas = dados.tarefas.filter(
+            t => t.pastaId !== pasta.id
+        );
+
+        if (!salvar()) {
+            dados.pastas = pastasAnteriores;
+            dados.tarefas = tarefasAnteriores;
+            return;
+        }
+
+        pastaAtual = null;
+        listaAtual = "todas";
+
+        renderizar();
+    }
+});
+
+// Mostrar a interface inicial.
 renderizar();

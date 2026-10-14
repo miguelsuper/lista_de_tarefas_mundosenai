@@ -60,16 +60,28 @@
           
         </header>
 
-        <form id="form-rapido" class="adicionar-tarefa">
-            <input
-                id="nova-tarefa"
-                type="text"
-                maxlength="120"
-                placeholder="Adicionar uma tarefa..."
-                autocomplete="off"
-            >
-            <button type="submit">+</button>
-        </form>
+        
+<form id="form-rapido" class="adicionar-tarefa">
+    <input
+        id="nova-tarefa"
+        type="text"
+        maxlength="120"
+        placeholder="Adicionar uma tarefa..."
+        autocomplete="off"
+        aria-label="Nova tarefa"
+        required
+    >
+
+    <input
+        id="prazo-tarefa"
+        type="date"
+        aria-label="Prazo da tarefa"
+        title="Escolher prazo"
+    >
+
+    <button type="submit" aria-label="Adicionar tarefa">+</button>
+</form>
+
 
         <section id="tarefas" class="tarefas"></section>
 
@@ -89,6 +101,11 @@
                 maxlength="40"
                 placeholder="Ex.: Faculdade"
                 required
+            >
+            <input
+            type="date"
+            id="prazo-tarefa"
+            aria-label="Prazo da tarefa"
             >
 
             <label for="cor-pasta">Cor</label>
