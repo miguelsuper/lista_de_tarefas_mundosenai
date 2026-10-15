@@ -44,7 +44,6 @@ function carregarDados() {
           Array.isArray(b.tarefas)
         );
 
-        // Mantém compatibilidade com tarefas já existentes.
         blocos.forEach(bloco => {
           bloco.tarefas.forEach(tarefa => {
             if (typeof tarefa.concluida !== 'boolean') {
@@ -79,7 +78,6 @@ function montarSeletorCores() {
       document.querySelectorAll('.color-btn').forEach(b =>
         b.classList.remove('selected')
       );
-
       btn.classList.add('selected');
       corSelecionada = cor.hex;
     }
@@ -98,7 +96,6 @@ function montarSeletorCores() {
 
 function configurarEventos() {
   document.getElementById('btnCreateBlock').onclick = criarBloco;
-
   document.getElementById('filterYear').onchange = renderizar;
   document.getElementById('filterMonth').onchange = renderizar;
   document.getElementById('filterDay').oninput = renderizar;
@@ -157,15 +154,33 @@ function deletarBloco(idBloco) {
   renderizar();
 }
 
+function obterHoje() {
+  const agora = new Date();
+  const ano = agora.getFullYear();
+  const mes = String(agora.getMonth() + 1).padStart(2, '0');
+  const dia = String(agora.getDate()).padStart(2, '0');
+
+  return `${ano}-${mes}-${dia}`;
+}
+
 function adicionarTarefa(idBloco) {
   const inputTexto = document.getElementById('task_text_' + idBloco);
   const inputData = document.getElementById('task_date_' + idBloco);
 
   const texto = inputTexto.value.trim();
   const data = inputData.value;
+  const hoje = obterHoje();
 
   if (!texto) {
     inputTexto.focus();
+    return;
+  }
+
+  // Bloqueia datas anteriores a hoje.
+  if (data && data < hoje) {
+    alert('Não é possível escolher uma data anterior a hoje!');
+    inputData.value = hoje;
+    inputData.focus();
     return;
   }
 
@@ -222,8 +237,6 @@ function deletarTarefa(idBloco, idTarefa) {
   renderizar();
 }
 
-// Calcula a diferença usando datas do calendário, sem depender
-// da hora atual ou de quantas horas já passaram no dia.
 function calcularPrazo(data) {
   if (!data) return null;
 
@@ -247,15 +260,12 @@ function calcularPrazo(data) {
   if (dias < 0) {
     return { texto: 'Vencido', classe: 'prazo-vencido' };
   }
-
   if (dias === 0) {
     return { texto: 'Vence hoje', classe: 'prazo-hoje' };
   }
-
   if (dias === 1) {
     return { texto: 'Último dia', classe: 'prazo-ultimo-dia' };
   }
-
   if (dias <= 7) {
     return { texto: 'Perto', classe: 'prazo-perto' };
   }
@@ -388,13 +398,7 @@ function renderizar() {
 
     html += `</div>`;
 
-    // Usa a data local, evitando problemas de fuso horário.
-    const agora = new Date();
-    const hoje = [
-      agora.getFullYear(),
-      String(agora.getMonth() + 1).padStart(2, '0'),
-      String(agora.getDate()).padStart(2, '0')
-    ].join('-');
+    const hoje = obterHoje();
 
     html += `
       <div class="add-task-box">
@@ -404,7 +408,12 @@ function renderizar() {
           placeholder="+ Nova tarefa..."
         >
         <div class="add-task-row">
-          <input type="date" id="task_date_${bloco.id}" value="${hoje}">
+          <input
+            type="date"
+            id="task_date_${bloco.id}"
+            value="${hoje}"
+            min="${hoje}"
+          >
           <button
             class="btn"
             style="width:auto; padding:6px 12px; font-size:12px;"
