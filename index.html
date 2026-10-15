@@ -2,22 +2,88 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Minha Lista de Tarefas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>organize.</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>LISTA DE TAREFAS</h1>
-    </header>
+
+  <header>
+    <h1>organize.</h1>
+  </header>
+
+  <div class="app-body">
+    <aside>
+      <div>
+        <div class="section-title">Novo Bloco</div>
+        
+        <div class="form-group">
+          <label for="blockTitleInput">Título do Bloco</label>
+          <input type="text" id="blockTitleInput" placeholder="Ex: Estudos, Trabalho...">
+        </div>
+
+        <div class="form-group">
+          <label>Cor do Bloco</label>
+          <div class="color-options" id="colorPicker"></div>
+        </div>
+
+        <button class="btn" id="btnCreateBlock">+ Criar Bloco</button>
+      </div>
+
+      <div>
+        <div class="section-title">Filtro por Data</div>
+
+        <div class="form-group">
+          <label for="filterYear">Ano</label>
+          <select id="filterYear">
+            <option value="">Todos</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filterMonth">Mês</label>
+          <select id="filterMonth">
+            <option value="">Todos</option>
+            <option value="01">Janeiro</option>
+            <option value="02">Fevereiro</option>
+            <option value="03">Março</option>
+            <option value="04">Abril</option>
+            <option value="05">Maio</option>
+            <option value="06">Junho</option>
+            <option value="07">Julho</option>
+            <option value="08">Agosto</option>
+            <option value="09">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filterDay">Dia</label>
+          <input type="number" id="filterDay" min="1" max="31" placeholder="Ex: 15">
+        </div>
+
+        <button class="btn btn-secondary" id="btnClearFilters">Limpar Filtros</button>
+      </div>
+    </aside>
+
     <main>
-        <input type="text" id="input-tarefa" placeholder="Digite uma tarefa...">
-        <button id="btn-adicionar">Adicionar</button>
-
-        <ul id="lista-tarefas"></ul>
-
-        <script src="script.js"></script>
+      <div id="blocksContainer" class="blocks-container">
+      </div>
     </main>
-    <footer>
-        <h3>Footer</h3>
-    </footer>
+  </div>
+
+  <footer>
+    <p>SESI - Ampére PR</p>
+    <a href="termos.html" class="linkTermo">
+      <p>Termos de Autorização</p>
+    </a>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
