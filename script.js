@@ -179,7 +179,7 @@ function renderizar() {
     `;
 
     if (tarefasFiltradas.length === 0) {
-      html += `<div style="font-size:13px; color:#000000; font-weight:bold; text-align:center; padding:10px;">Nenhuma tarefa nesta data</div>`;
+      html += `<div style="font-size:13px; color:#ffffff; font-weight:bold; text-align:center; padding:10px;">Nenhuma tarefa nesta data</div>`;
     } else {
       tarefasFiltradas.forEach(t => {
         const dataFormatada = t.data ? t.data.split('-').reverse().join('/') : '';
