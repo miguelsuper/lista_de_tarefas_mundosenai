@@ -129,7 +129,7 @@ input:focus, select:focus {
 }
 
 .btn:hover {
-  background-color: #333333;
+  background-color: #3f3f3f;
 }
 
 .btn:active {
@@ -266,7 +266,7 @@ main {
 
 .task-text.done {
   text-decoration: line-through;
-  color: #888888;
+  color: #727272;
 }
 
 .task-date {
