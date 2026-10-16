@@ -84,6 +84,17 @@
     </a>
   </footer>
 
+  <dialog id="appDialog" class="app-dialog" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+    <form method="dialog" class="app-dialog-content">
+      <h2 id="appDialogTitle">Aviso</h2>
+      <p id="appDialogMessage"></p>
+      <div class="app-dialog-actions">
+        <button id="appDialogCancel" class="btn btn-secondary" value="cancel" hidden>Cancelar</button>
+        <button id="appDialogConfirm" class="btn" value="confirm">Entendi</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="script.js"></script>
 </body>
 </html>
