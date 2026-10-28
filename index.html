@@ -3,98 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e8eaf6">
   <title>organize.</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <header>
-    <h1>organize.</h1>
+  <header class="app-header">
+    <button id="btnMenu" class="icon-button hamburger-button" type="button" aria-label="Abrir menu de blocos" aria-controls="sidePanel" aria-expanded="false"><span></span><span></span><span></span></button>
+    <h1>organize<span>.</span></h1>
+    <div class="header-actions">
+      <button id="btnFilters" class="filter-toggle" type="button" aria-controls="filterPanel" aria-expanded="false">☷ <span>Filtros</span></button>
+    </div>
   </header>
 
-  <div class="app-body">
-    <aside>
-      <div>
-        <div class="section-title">Novo Bloco</div>
-        
-        <div class="form-group">
-          <label for="blockTitleInput">Título do Bloco</label>
-          <input type="text" id="blockTitleInput" placeholder="Ex: Estudos, Trabalho...">
-        </div>
+  <div id="menuOverlay" class="menu-overlay" aria-hidden="true"></div>
+  <aside id="sidePanel" class="side-panel" aria-label="Menu de criação de blocos">
+    <div class="panel-heading"><div class="section-title">Novo bloco</div><button id="btnCloseMenu" class="icon-button close-button" type="button" aria-label="Fechar menu">×</button></div>
+    <div class="form-group">
+      <label for="blockTitleInput">Título do bloco</label>
+      <input type="text" id="blockTitleInput" placeholder="Ex.: Estudos, Trabalho..." maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>Cor do bloco</label>
+      <div class="color-options" id="colorPicker"></div>
+    </div>
+    <button class="btn" id="btnCreateBlock" type="button">+ Criar bloco</button>
+    <p class="panel-tip">Organize suas ideias, uma tarefa de cada vez.</p>
+  </aside>
 
-        <div class="form-group">
-          <label>Cor do Bloco</label>
-          <div class="color-options" id="colorPicker"></div>
-        </div>
-
-        <button class="btn" id="btnCreateBlock">+ Criar Bloco</button>
+  <main class="workspace">
+    <section id="filterPanel" class="filter-panel" aria-label="Filtros por data">
+      <div class="filter-panel-heading"><strong>Filtrar tarefas</strong><span>Por data de entrega</span></div>
+      <div class="filter-fields">
+        <div class="form-group"><label for="filterYear">Ano</label><select id="filterYear"><option value="">Todos</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option></select></div>
+        <div class="form-group"><label for="filterMonth">Mês</label><select id="filterMonth"><option value="">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+        <div class="form-group"><label for="filterDay">Dia</label><input type="number" id="filterDay" min="1" max="31" placeholder="Ex.: 15"></div>
       </div>
+      <button class="btn btn-secondary" id="btnClearFilters" type="button">Limpar filtros</button>
+    </section>
+    <div class="workspace-intro"><div><p class="eyebrow">SEU ESPAÇO DE ORGANIZAÇÃO</p><h2>Suas ideias, em movimento.</h2><p class="intro-subtitle">Crie blocos, organize tarefas e acompanhe seu progresso.</p></div></div>
+    <div id="blocksContainer" class="blocks-container"></div>
+  </main>
 
-      <div>
-        <div class="section-title">Filtro por Data</div>
-
-        <div class="form-group">
-          <label for="filterYear">Ano</label>
-          <select id="filterYear">
-            <option value="">Todos</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="filterMonth">Mês</label>
-          <select id="filterMonth">
-            <option value="">Todos</option>
-            <option value="01">Janeiro</option>
-            <option value="02">Fevereiro</option>
-            <option value="03">Março</option>
-            <option value="04">Abril</option>
-            <option value="05">Maio</option>
-            <option value="06">Junho</option>
-            <option value="07">Julho</option>
-            <option value="08">Agosto</option>
-            <option value="09">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="filterDay">Dia</label>
-          <input type="number" id="filterDay" min="1" max="31" placeholder="Ex: 15">
-        </div>
-
-        <button class="btn btn-secondary" id="btnClearFilters">Limpar Filtros</button>
-      </div>
-    </aside>
-
-    <main>
-      <div id="blocksContainer" class="blocks-container">
-      </div>
-    </main>
-  </div>
-
-  <footer>
-    <p>SESI - Ampére PR</p>
-    <a href="termos.html" class="linkTermo">
-      <p>Termos de Autorização</p>
-    </a>
-  </footer>
+  <footer><p>SESI · Ampére, PR</p><a href="termos.html" class="linkTermo">Termos de Autorização</a></footer>
 
   <dialog id="appDialog" class="app-dialog" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
-    <form method="dialog" class="app-dialog-content">
-      <h2 id="appDialogTitle">Aviso</h2>
-      <p id="appDialogMessage"></p>
-      <div class="app-dialog-actions">
-        <button id="appDialogCancel" class="btn btn-secondary" value="cancel" hidden>Cancelar</button>
-        <button id="appDialogConfirm" class="btn" value="confirm">Entendi</button>
-      </div>
-    </form>
+    <form method="dialog" class="app-dialog-content"><h2 id="appDialogTitle">Aviso</h2><p id="appDialogMessage"></p><div class="app-dialog-actions"><button id="appDialogCancel" class="btn btn-secondary" value="cancel" hidden>Cancelar</button><button id="appDialogConfirm" class="btn" value="confirm">Entendi</button></div></form>
   </dialog>
-
   <script src="script.js"></script>
 </body>
 </html>
