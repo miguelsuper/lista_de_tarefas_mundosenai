@@ -44,11 +44,9 @@ let tarefasExpandidas = new Set();
 window.onload = function() {
 
   carregarDados();
-
   montarSeletorCores();
-
+  carregarAparencia();
   configurarEventos();
-
   renderizar();
 
 };
@@ -279,41 +277,99 @@ function montarSeletorCores() {
 
 }
 
+function carregarAparencia() {
+  try {
+    const temaSalvo = localStorage.getItem('organize_tema');
+    const estiloSalvo = localStorage.getItem('organize_estilo');
+    aplicarAparencia(
+      temaSalvo === 'escuro' ? 'escuro' : 'claro',
+      estiloSalvo === 'vidro' ? 'vidro' : 'liso'
+    );
+  } catch (erro) {
+    console.error('Erro ao carregar as opções de aparência:', erro);
+    mostrarModal('Não foi possível carregar a aparência', 'As preferências de aparência não puderam ser lidas neste navegador.');
+    aplicarAparencia('claro', 'liso');
+  }
+}
+
+function aplicarAparencia(tema, estilo) {
+  document.body.dataset.theme = tema;
+  document.body.dataset.style = estilo;
+
+  document.querySelectorAll('[data-appearance-theme]').forEach(botao => {
+    botao.setAttribute('aria-pressed', String(botao.dataset.appearanceTheme === tema));
+  });
+  document.querySelectorAll('[data-appearance-style]').forEach(botao => {
+    botao.setAttribute('aria-pressed', String(botao.dataset.appearanceStyle === estilo));
+  });
+}
 
 
 function configurarEventos() {
 
   const menu = document.getElementById('sidePanel');
-  const overlay = document.getElementById('menuOverlay');
   const btnMenu = document.getElementById('btnMenu');
-  const btnFecharMenu = document.getElementById('btnCloseMenu');
   const filtroPanel = document.getElementById('filterPanel');
   const btnFiltros = document.getElementById('btnFilters');
+  const btnAparencia = document.getElementById('btnAppearanceToggle');
+  const painelAparencia = document.getElementById('appearancePanel');
+
+  btnAparencia.addEventListener('click', () => {
+    const aberto = painelAparencia.hidden;
+    painelAparencia.hidden = !aberto;
+    btnAparencia.setAttribute('aria-expanded', String(aberto));
+  });
+
+  painelAparencia.addEventListener('click', evento => {
+    const botaoTema = evento.target.closest('[data-appearance-theme]');
+    const botaoEstilo = evento.target.closest('[data-appearance-style]');
+    if (!botaoTema && !botaoEstilo) return;
+
+    const tema = botaoTema ? botaoTema.dataset.appearanceTheme : document.body.dataset.theme;
+    const estilo = botaoEstilo ? botaoEstilo.dataset.appearanceStyle : document.body.dataset.style;
+    aplicarAparencia(tema, estilo);
+    try {
+      localStorage.setItem('organize_tema', tema);
+      localStorage.setItem('organize_estilo', estilo);
+    } catch (erro) {
+      console.error('Erro ao salvar as opções de aparência:', erro);
+      mostrarModal('Não foi possível salvar a aparência', 'As preferências de aparência não puderam ser salvas neste navegador.');
+    }
+    painelAparencia.hidden = true;
+    btnAparencia.setAttribute('aria-expanded', 'false');
+  });
 
   function fecharMenu() {
     menu.classList.remove('is-open');
-    overlay.classList.remove('is-visible');
     btnMenu.setAttribute('aria-expanded', 'false');
+    btnMenu.setAttribute('aria-label', 'Abrir menu de blocos');
+    menu.querySelector('.side-panel-content').setAttribute('inert', '');
   }
 
   btnMenu.addEventListener('click', () => {
     const aberto = menu.classList.toggle('is-open');
-    overlay.classList.toggle('is-visible', aberto);
     btnMenu.setAttribute('aria-expanded', String(aberto));
+    btnMenu.setAttribute('aria-label', aberto ? 'Fechar menu de blocos' : 'Abrir menu de blocos');
+    menu.querySelector('.side-panel-content').toggleAttribute('inert', !aberto);
     if (aberto) filtroPanel.classList.remove('is-open');
   });
-  btnFecharMenu.addEventListener('click', fecharMenu);
-  overlay.addEventListener('click', fecharMenu);
   btnFiltros.addEventListener('click', () => {
     const aberto = filtroPanel.classList.toggle('is-open');
     btnFiltros.setAttribute('aria-expanded', String(aberto));
-    if (aberto) fecharMenu();
   });
   document.addEventListener('keydown', evento => {
     if (evento.key === 'Escape') {
       fecharMenu();
       filtroPanel.classList.remove('is-open');
       btnFiltros.setAttribute('aria-expanded', 'false');
+      painelAparencia.hidden = true;
+      btnAparencia.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', evento => {
+    if (!evento.target.closest('.appearance-picker')) {
+      painelAparencia.hidden = true;
+      btnAparencia.setAttribute('aria-expanded', 'false');
     }
   });
 
@@ -406,11 +462,7 @@ function criarBloco() {
 
 
   input.value = '';
-
   renderizar();
-  document.getElementById('sidePanel').classList.remove('is-open');
-  document.getElementById('menuOverlay').classList.remove('is-visible');
-  document.getElementById('btnMenu').setAttribute('aria-expanded', 'false');
 }
 
 
@@ -1211,10 +1263,20 @@ function renderizar() {
     const expandido = blocosExpandidos.has(bloco.id);
 
     card.className = 'block-card' + (expandido ? ' is-expanded' : '');
-
     card.dataset.blocoId = bloco.id;
-
     card.style.backgroundColor = bloco.cor;
+    card.style.setProperty('--block-color', bloco.cor);
+    card.tabIndex = 0;
+    card.setAttribute('aria-expanded', String(expandido));
+    card.addEventListener('click', evento => {
+      if (evento.target.closest('button, input, select, textarea, a, .task-item')) return;
+      alternarExpansaoBloco(bloco.id);
+    });
+    card.addEventListener('keydown', evento => {
+      if (evento.target !== card || (evento.key !== 'Enter' && evento.key !== ' ')) return;
+      evento.preventDefault();
+      alternarExpansaoBloco(bloco.id);
+    });
 
 
 
@@ -1225,17 +1287,6 @@ function renderizar() {
         <span class="block-title">${escaparHTML(bloco.titulo)}</span>
 
         <div class="block-actions">
-
-          <button
-
-            class="btn-expand-block"
-
-            onclick="alternarExpansaoBloco(${bloco.id})"
-
-            aria-expanded="${expandido}"
-
-          >${expandido ? 'Compactar' : 'Expandir'}</button>
-
           <button
 
             class="btn-delete-block"
