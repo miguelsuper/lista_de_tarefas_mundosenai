@@ -884,9 +884,15 @@ main {
 
   left: 0;
 
-  width: 250px;
+  width: 260px;
 
-  padding: 12px;
+  min-width: 260px;
+
+  max-width: 260px;
+
+  min-height: 270px;
+
+  padding: 10px;
 
   border: 1px solid #cccccc;
 
@@ -895,6 +901,8 @@ main {
   background: #ffffff;
 
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
+
+  box-sizing: border-box;
 
 }
 
@@ -910,13 +918,17 @@ main {
 
 .calendar-header {
 
-  display: flex;
+  display: grid;
+
+  grid-template-columns: 58px minmax(0, 1fr) 58px;
 
   align-items: center;
 
-  justify-content: space-between;
+  gap: 6px;
 
-  margin-bottom: 10px;
+  min-height: 36px;
+
+  margin-bottom: 8px;
 
   color: #111111;
 
@@ -926,11 +938,25 @@ main {
 
 
 
+.calendar-nav-group {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 4px;
+
+}
+
+
+
 .calendar-header button {
 
-  width: 30px;
+  width: 24px;
 
-  height: 30px;
+  height: 24px;
 
   border: 1px solid #cccccc;
 
@@ -940,9 +966,31 @@ main {
 
   color: #111111;
 
-  font-size: 20px;
+  font-size: 14px;
+
+  line-height: 1;
 
   cursor: pointer;
+
+}
+
+
+
+.calendar-header strong {
+
+  display: block;
+
+  min-width: 0;
+
+  text-align: center;
+
+  font-size: 12px;
+
+  line-height: 1.25;
+
+  white-space: normal;
+
+  overflow: visible;
 
 }
 
@@ -954,7 +1002,9 @@ main {
 
   grid-template-columns: repeat(7, minmax(0, 1fr));
 
-  gap: 4px;
+  grid-template-rows: repeat(6, 26px);
+
+  gap: 3px;
 
   text-align: center;
 
@@ -964,11 +1014,15 @@ main {
 
 .calendar-weekday {
 
-  padding: 4px 0;
+  display: grid;
+
+  place-items: center;
+
+  min-height: 14px;
 
   color: #555555;
 
-  font-size: 11px;
+  font-size: 10px;
 
   font-weight: bold;
 
@@ -984,9 +1038,11 @@ main {
 
   min-width: 0;
 
-  aspect-ratio: 1;
+  min-height: 26px;
 
   place-items: center;
+
+  box-sizing: border-box;
 
 }
 
@@ -1002,7 +1058,7 @@ main {
 
   color: #111111;
 
-  font-size: 12px;
+  font-size: 11px;
 
   cursor: pointer;
 

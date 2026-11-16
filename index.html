@@ -60,7 +60,7 @@
       <section id="filterPanel" class="filter-panel" aria-label="Filtros por data">
         <div class="filter-panel-heading"><strong>Filtrar tarefas</strong><span>Por data de entrega</span></div>
         <div class="filter-fields">
-          <div class="form-group"><label for="filterYear">Ano</label><select id="filterYear"><option value="">Todos</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option></select></div>
+          <div class="form-group"><label for="filterYear">Ano</label><input id="filterYear" type="number" min="1900" max="9999" step="1" placeholder="Digite o ano"></div>
           <div class="form-group"><label for="filterMonth">Mês</label><select id="filterMonth"><option value="">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
           <div class="form-group"><label for="filterDay">Dia</label><input type="number" id="filterDay" min="1" max="31" placeholder="Ex.: 15"></div>
         </div>

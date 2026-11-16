@@ -1,5 +1,3 @@
-
-
 const CORES = [
 
   { id: 'vermelho', hex: '#ff4757' },
@@ -376,6 +374,8 @@ function configurarEventos() {
   document.getElementById('btnCreateBlock').onclick = criarBloco;
 
   document.getElementById('filterYear').onchange = renderizar;
+
+  document.getElementById('filterYear').oninput = renderizar;
 
   document.getElementById('filterMonth').onchange = renderizar;
 
@@ -779,6 +779,32 @@ function mudarMesCalendario(idBloco, direcao) {
 
 
 
+function mudarAnoCalendario(idBloco, direcao) {
+
+  const calendario = document.getElementById('calendar_' + idBloco);
+
+  const referencia = new Date(
+
+    Number(calendario.dataset.ano) + direcao,
+
+    Number(calendario.dataset.mes),
+
+    1
+
+  );
+
+
+
+  calendario.dataset.ano = referencia.getFullYear();
+
+  calendario.dataset.mes = referencia.getMonth();
+
+  renderizarCalendario(idBloco);
+
+}
+
+
+
 function selecionarDataCalendario(idBloco, dataISO) {
 
   document.getElementById('task_date\_' + idBloco).value = formatarDataBrasileira(dataISO);
@@ -791,7 +817,7 @@ function selecionarDataCalendario(idBloco, dataISO) {
 
 function renderizarCalendario(idBloco) {
 
-  const calendario = document.getElementById('calendar\_' + idBloco);
+  const calendario = document.getElementById('calendar_' + idBloco);
 
   const ano = Number(calendario.dataset.ano);
 
@@ -813,7 +839,7 @@ function renderizarCalendario(idBloco) {
 
   const dataSelecionada = converterDataBrasileiraParaISO(
 
-    document.getElementById('task_date\_' + idBloco).value
+    document.getElementById('task_date_' + idBloco).value
 
   );
 
@@ -845,8 +871,6 @@ function renderizarCalendario(idBloco) {
 
     const desabilitada = dataISO < obterHoje() ? 'disabled' : '';
 
-
-
     dias += `
 
       <button
@@ -873,11 +897,23 @@ function renderizarCalendario(idBloco) {
 
     <div class="calendar-header">
 
-      <button type="button" onclick="mudarMesCalendario(${idBloco}, -1)" aria-label="Mês anterior">‹</button>
+      <div class="calendar-nav-group">
+
+        <button type="button" onclick="mudarAnoCalendario(${idBloco}, -1)" aria-label="Ano anterior">‹‹</button>
+
+        <button type="button" onclick="mudarMesCalendario(${idBloco}, -1)" aria-label="Mês anterior">‹</button>
+
+      </div>
 
       <strong>${tituloMes}</strong>
 
-      <button type="button" onclick="mudarMesCalendario(${idBloco}, 1)" aria-label="Próximo mês">›</button>
+      <div class="calendar-nav-group">
+
+        <button type="button" onclick="mudarMesCalendario(${idBloco}, 1)" aria-label="Próximo mês">›</button>
+
+        <button type="button" onclick="mudarAnoCalendario(${idBloco}, 1)" aria-label="Próximo ano">››</button>
+
+      </div>
 
     </div>
 
@@ -1128,19 +1164,16 @@ function calcularPrazo(data) {
     return { texto: 'Vencido', classe: 'prazo-vencido' };
 
   }
-
   if (dias === 0) {
 
     return { texto: 'Vence hoje', classe: 'prazo-hoje' };
 
   }
-
   if (dias === 1) {
 
     return { texto: 'Último dia', classe: 'prazo-ultimo-dia' };
 
   }
-
   if (dias <= 7) {
 
     return { texto: 'Perto', classe: 'prazo-perto' };
@@ -1390,7 +1423,6 @@ function renderizar() {
 
 
         const tarefaExpandida = tarefasExpandidas.has(`${bloco.id}:${t.id}`);
-
         html += `
           <div
             class="task-item ${tarefaExpandida ? 'task-expanded' : ''}"
