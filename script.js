@@ -73,7 +73,7 @@ function salvarDados() {
 
 
 
-function mostrarModal(titulo, mensagem, confirmar = false) {
+function mostrarModal(titulo, mensagem, confirmar = false, textoConfirmacao = confirmar ? 'Excluir' : 'Entendi') {
 
   const dialogo = document.getElementById('appDialog');
 
@@ -89,7 +89,7 @@ function mostrarModal(titulo, mensagem, confirmar = false) {
 
   botaoCancelar.hidden = !confirmar;
 
-  botaoConfirmar.textContent = confirmar ? 'Excluir' : 'Entendi';
+  botaoConfirmar.textContent = textoConfirmacao;
 
 
 
@@ -1446,7 +1446,7 @@ function renderizar() {
 
                 ${dataFormatada ? `
 
-                  <div class="task-date">📅 ${dataFormatada}</div>
+                  <div class="task-date" onclick="event.stopPropagation(); editarDataTarefa(${bloco.id}, ${t.id});" title="Alterar data da tarefa" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault(); event.stopPropagation(); editarDataTarefa(${bloco.id}, ${t.id});}">📅 ${dataFormatada}</div>
 
                 ` : ''}
 
@@ -1616,5 +1616,85 @@ function renderizar() {
     `;
 
   }
+
+}
+
+
+
+async function editarDataTarefa(idBloco, idTarefa) {
+
+  const bloco = blocos.find(b => b.id === idBloco);
+
+  if (!bloco) return;
+
+
+
+  const tarefa = bloco.tarefas.find(t => t.id === idTarefa);
+
+  if (!tarefa) return;
+
+
+
+  const confirmar = await mostrarModal(
+    'Alterar data?',
+    `Deseja alterar a data da tarefa "${tarefa.texto}"?`,
+    true,
+    'Alterar'
+  );
+
+  if (!confirmar) return;
+
+
+
+  const valorAtual = tarefa.data ? formatarDataBrasileira(tarefa.data) : '';
+  const novaDataInput = window.prompt(
+    'Digite a nova data da tarefa (dd/mm/aaaa):',
+    valorAtual
+  );
+
+  if (novaDataInput === null) return;
+
+
+
+  const novaDataTexto = novaDataInput.trim();
+
+  const novaData = converterDataBrasileiraParaISO(novaDataTexto);
+
+
+
+  if (!novaDataTexto) {
+
+    if (!await mostrarModal('Data vazia', 'Deseja remover a data da tarefa?', true, 'Remover')) {
+      return;
+    }
+
+    tarefa.data = '';
+
+  } else {
+
+    if (!novaData) {
+      await mostrarModal('Data inválida', 'Digite uma data válida no formato dd/mm/aaaa.');
+      return;
+    }
+
+
+
+    if (novaData < obterHoje()) {
+      await mostrarModal('Data fora do prazo', 'A data da tarefa deve ser hoje ou uma data futura.');
+      return;
+    }
+
+    tarefa.data = novaData;
+  }
+
+
+
+  if (!salvarDados()) {
+    return;
+  }
+
+
+
+  renderizar();
 
 }
